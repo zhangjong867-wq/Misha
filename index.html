@@ -1,0 +1,32 @@
+print("=== КАЛЬКУЛЯТОР ===")
+
+while True:
+    try:
+        num1 = float(input("Введите первое число: "))
+        op = input("Выберите операцию (+, -, *, /): ")
+        num2 = float(input("Введите второе число: "))
+
+        if op == "+":
+            result = num1 + num2
+        elif op == "-":
+            result = num1 - num2
+        elif op == "*":
+            result = num1 * num2
+        elif op == "/":
+            if num2 == 0:
+                print("Ошибка: деление на 0!")
+                continue
+            result = num1 / num2
+        else:
+            print("Неверная операция!")
+            continue
+
+        print("Результат:", result)
+
+        again = input("Продолжить? (да/нет): ").lower()
+        if again != "да":
+            print("Выход из программы...")
+            break
+
+    except ValueError:
+        print("Ошибка: вводите только числа!")
