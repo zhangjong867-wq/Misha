@@ -1,32 +1,172 @@
-print("=== КАЛЬКУЛЯТОР ===")
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Современный Веб-Калькулятор</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .display {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: right;
+            padding: 1.5rem;
+            font-size: 2.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            min-height: 5rem;
+            word-break: break-all;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+        .btn {
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            aspect-ratio: 1 / 1;
+            cursor: pointer;
+            user-select: none;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn-number {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .btn-number:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .btn-op {
+            background: rgba(251, 191, 36, 0.8);
+            color: #1e1b4b;
+        }
+        .btn-op:hover {
+            background: rgba(251, 191, 36, 1);
+        }
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.8);
+            color: white;
+        }
+        .btn-clear:hover {
+            background: rgba(239, 68, 68, 1);
+        }
+        .btn-equal {
+            background: rgba(34, 197, 94, 0.8);
+            color: white;
+        }
+        .btn-equal:hover {
+            background: rgba(34, 197, 94, 1);
+        }
+    </style>
+</head>
+<body>
 
-while True:
-    try:
-        num1 = float(input("Введите первое число: "))
-        op = input("Выберите операцию (+, -, *, /): ")
-        num2 = float(input("Введите второе число: "))
+<div class="glass-panel p-6 w-full max-w-xs md:max-w-sm mx-4">
+    <div id="display" class="display">0</div>
+    
+    <div class="grid grid-cols-4 gap-3">
+        <!-- Первый ряд -->
+        <div onclick="clearDisplay()" class="btn btn-clear col-span-2 aspect-auto h-full">AC</div>
+        <div onclick="appendSymbol('%')" class="btn btn-number">%</div>
+        <div onclick="appendSymbol('/')" class="btn btn-op">÷</div>
 
-        if op == "+":
-            result = num1 + num2
-        elif op == "-":
-            result = num1 - num2
-        elif op == "*":
-            result = num1 * num2
-        elif op == "/":
-            if num2 == 0:
-                print("Ошибка: деление на 0!")
-                continue
-            result = num1 / num2
-        else:
-            print("Неверная операция!")
-            continue
+        <!-- Цифры и операции -->
+        <div onclick="appendSymbol('7')" class="btn btn-number">7</div>
+        <div onclick="appendSymbol('8')" class="btn btn-number">8</div>
+        <div onclick="appendSymbol('9')" class="btn btn-number">9</div>
+        <div onclick="appendSymbol('*')" class="btn btn-op">×</div>
 
-        print("Результат:", result)
+        <div onclick="appendSymbol('4')" class="btn btn-number">4</div>
+        <div onclick="appendSymbol('5')" class="btn btn-number">5</div>
+        <div onclick="appendSymbol('6')" class="btn btn-number">6</div>
+        <div onclick="appendSymbol('-')" class="btn btn-op">−</div>
 
-        again = input("Продолжить? (да/нет): ").lower()
-        if again != "да":
-            print("Выход из программы...")
-            break
+        <div onclick="appendSymbol('1')" class="btn btn-number">1</div>
+        <div onclick="appendSymbol('2')" class="btn btn-number">2</div>
+        <div onclick="appendSymbol('3')" class="btn btn-number">3</div>
+        <div onclick="appendSymbol('+')" class="btn btn-op">+</div>
 
-    except ValueError:
-        print("Ошибка: вводите только числа!")
+        <div onclick="appendSymbol('0')" class="btn btn-number col-span-2 aspect-auto h-full">0</div>
+        <div onclick="appendSymbol('.')" class="btn btn-number">.</div>
+        <div onclick="calculate()" class="btn btn-equal">=</div>
+    </div>
+</div>
+
+<script>
+    let currentInput = "0";
+
+    function updateDisplay() {
+        const display = document.getElementById('display');
+        display.innerText = currentInput;
+    }
+
+    function appendSymbol(symbol) {
+        if (currentInput === "0" && !isNaN(symbol)) {
+            currentInput = symbol;
+        } else {
+            // Предотвращение двойных операторов
+            const lastChar = currentInput.slice(-1);
+            const operators = ['+', '-', '*', '/', '%', '.'];
+            if (operators.includes(lastChar) && operators.includes(symbol)) {
+                currentInput = currentInput.slice(0, -1) + symbol;
+            } else {
+                currentInput += symbol;
+            }
+        }
+        updateDisplay();
+    }
+
+    function clearDisplay() {
+        currentInput = "0";
+        updateDisplay();
+    }
+
+    function calculate() {
+        try {
+            // Используем Function вместо eval для чуть большей безопасности в простых задачах
+            const result = new Function('return ' + currentInput.replace('×', '*').replace('÷', '/'))();
+            currentInput = Number.isInteger(result) ? result.toString() : result.toFixed(4).replace(/\.?0+$/, "");
+        } catch (error) {
+            currentInput = "Ошибка";
+            setTimeout(clearDisplay, 1500);
+        }
+        updateDisplay();
+    }
+
+    // Добавляем поддержку клавиатуры
+    document.addEventListener('keydown', (event) => {
+        const key = event.key;
+        if (!isNaN(key)) appendSymbol(key);
+        if (['+', '-', '*', '/', '.', '%'].includes(key)) appendSymbol(key);
+        if (key === 'Enter' || key === '=') calculate();
+        if (key === 'Escape') clearDisplay();
+        if (key === 'Backspace') {
+            currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : "0";
+            updateDisplay();
+        }
+    });
+</script>
+
+</body>
+</html>
